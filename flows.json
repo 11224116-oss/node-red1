@@ -1,0 +1,375 @@
+[
+    {
+        "id": "8479a3a703296198",
+        "type": "tab",
+        "label": "專題C：全班訊息廣播系統 (user6)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "211c4942ec98c942",
+        "type": "inject",
+        "z": "8479a3a703296198",
+        "name": "預設類別：announcement",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.2",
+        "topic": "",
+        "payload": "announcement",
+        "payloadType": "str",
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "195d38732e4c14c7"
+            ]
+        ]
+    },
+    {
+        "id": "195d38732e4c14c7",
+        "type": "ui_dropdown",
+        "z": "8479a3a703296198",
+        "name": "選擇訊息類別",
+        "label": "訊息類別",
+        "tooltip": "",
+        "place": "請選擇類別",
+        "group": "gc00000000000001",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "公告 (announcement)",
+                "value": "announcement",
+                "type": "str"
+            },
+            {
+                "label": "警報 (alert)",
+                "value": "alert",
+                "type": "str"
+            },
+            {
+                "label": "狀態 (status)",
+                "value": "status",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "topicType": "str",
+        "className": "",
+        "x": 380,
+        "y": 80,
+        "wires": [
+            [
+                "6129b52a2b83c650"
+            ]
+        ]
+    },
+    {
+        "id": "6129b52a2b83c650",
+        "type": "function",
+        "z": "8479a3a703296198",
+        "name": "暫存選擇的類別",
+        "func": "flow.set(\"c_category\", msg.payload);\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "44387160f4585533",
+        "type": "ui_text_input",
+        "z": "8479a3a703296198",
+        "name": "輸入廣播內容",
+        "label": "廣播內容",
+        "tooltip": "",
+        "group": "gc00000000000001",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": "0",
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "930e4c53849868ac"
+            ]
+        ]
+    },
+    {
+        "id": "930e4c53849868ac",
+        "type": "function",
+        "z": "8479a3a703296198",
+        "name": "暫存輸入的文字",
+        "func": "flow.set(\"c_text\", msg.payload);\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8855f1c32eca4fd7",
+        "type": "ui_button",
+        "z": "8479a3a703296198",
+        "name": "發送廣播按鈕",
+        "group": "gc00000000000001",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "發送全班廣播訊息",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "send",
+        "payload": "send",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "26142716781cbaf8"
+            ]
+        ]
+    },
+    {
+        "id": "26142716781cbaf8",
+        "type": "function",
+        "z": "8479a3a703296198",
+        "name": "組合 user6 廣播 Topic 與內容",
+        "func": "const category = flow.get(\"c_category\") || \"announcement\";\nconst text = (flow.get(\"c_text\") || \"\").trim();\n\nif (!text) {\n    node.warn(\"請先輸入廣播訊息內容再發送！\");\n    return null;\n}\n\nmsg.topic = `AIOT/user6/message/${category}`;\nmsg.payload = text;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 200,
+        "wires": [
+            [
+                "ef0bbc926dcc651f"
+            ]
+        ]
+    },
+    {
+        "id": "ef0bbc926dcc651f",
+        "type": "mqtt out",
+        "z": "8479a3a703296198",
+        "name": "發佈廣播訊息 (MQTT Out)",
+        "topic": "",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "24ed95e43af015da",
+        "x": 660,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "96746973899f5df0",
+        "type": "mqtt in",
+        "z": "8479a3a703296198",
+        "name": "Wildcard 訂閱全班訊息 (AIOT/+/message/+)",
+        "topic": "AIOT/+/message/+",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "24ed95e43af015da",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 210,
+        "y": 320,
+        "wires": [
+            [
+                "9dd38c6648371e2d"
+            ]
+        ]
+    },
+    {
+        "id": "9dd38c6648371e2d",
+        "type": "function",
+        "z": "8479a3a703296198",
+        "name": "解析發送者與訊息類別",
+        "func": "const topic = msg.topic || \"\";\nconst parts = topic.split(\"/\");\n// Topic 格式: AIOT / userX / message / category\nconst sender = parts[1] || \"未知使用者\";\nconst category = parts[3] || \"一般\";\nconst content = (typeof msg.payload === \"object\") ? JSON.stringify(msg.payload) : String(msg.payload);\nconst now = new Date().toLocaleTimeString('zh-TW', { hour12: false });\n\nconst catMap = {\n    \"announcement\": \"📢 公告 (announcement)\",\n    \"alert\": \"🚨 警報 (alert)\",\n    \"status\": \"ℹ️ 狀態 (status)\"\n};\nconst catLabel = catMap[category] || category;\n\n// 保留最近 10 筆全班廣播紀錄\nlet history = flow.get(\"c_history\") || [];\nhistory.unshift({\n    time: now,\n    sender: sender,\n    category: category,\n    catLabel: catLabel,\n    content: content\n});\nif (history.length > 10) {\n    history = history.slice(0, 10);\n}\nflow.set(\"c_history\", history);\n\nmsg.payload = {\n    sender: sender,\n    catLabel: catLabel,\n    content: content,\n    time: now,\n    topic: topic,\n    history: history\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 320,
+        "wires": [
+            [
+                "3b362119e92b6403",
+                "493881e77d8718b8",
+                "958abb84e79749e6"
+            ]
+        ]
+    },
+    {
+        "id": "3b362119e92b6403",
+        "type": "ui_text",
+        "z": "8479a3a703296198",
+        "group": "gc00000000000002",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "顯示最新來源與類別",
+        "label": "最新廣播來源",
+        "format": "{{msg.payload.sender}} ｜ {{msg.payload.catLabel}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 760,
+        "y": 270,
+        "wires": []
+    },
+    {
+        "id": "493881e77d8718b8",
+        "type": "ui_template",
+        "z": "8479a3a703296198",
+        "group": "gc00000000000002",
+        "name": "全班廣播歷史留言板",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"max-height: 280px; overflow-y: auto; padding: 4px;\">\n  <div ng-if=\"!msg.payload.history || msg.payload.history.length === 0\" style=\"color: #888; text-align: center; padding: 16px;\">\n    尚未收到任何全班廣播訊息...\n  </div>\n  <div ng-repeat=\"item in msg.payload.history\" style=\"border-left: 4px solid {{item.category === 'alert' ? '#ef4444' : (item.category === 'status' ? '#22c55e' : '#3b82f6')}}; background: #f8fafc; padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; color: #1e293b;\">\n    <div style=\"font-size: 12px; color: #64748b; display: flex; justify-content: space-between;\">\n      <span><b>{{item.sender}}</b> ・ {{item.catLabel}}</span>\n      <span>{{item.time}}</span>\n    </div>\n    <div style=\"font-size: 15px; margin-top: 4px; word-break: break-all;\">{{item.content}}</div>\n  </div>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 760,
+        "y": 350,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "958abb84e79749e6",
+        "type": "debug",
+        "z": "8479a3a703296198",
+        "name": "查看收到的全班廣播",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 390,
+        "wires": []
+    },
+    {
+        "id": "gc00000000000001",
+        "type": "ui_group",
+        "name": "1. 發佈廣播訊息 (user6)",
+        "tab": "tc00000000000001",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "24ed95e43af015da",
+        "type": "mqtt-broker",
+        "name": "user6",
+        "broker": "mqtt.ridgerealm.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "gc00000000000002",
+        "type": "ui_group",
+        "name": "2. 全班廣播接收看板 (Wildcard: AIOT/+/message/+)",
+        "tab": "tc00000000000001",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "tc00000000000001",
+        "type": "ui_tab",
+        "name": "專題C：全班訊息廣播系統",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "21100b426dba992c",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
